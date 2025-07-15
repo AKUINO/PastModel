@@ -34,18 +34,8 @@ PaInBar = 1e5
 PaInmBar = 100
 mmInM = 1000
 
-pasto = "upgrade2022"
-debitsLH = [37,
-            74,
-            121,
-            153,
-            189,
-            222,
-            250,
-            268,
-            294,
-            328,
-            360             ]
+pasto = "nefis"
+debitsLH = [50,100,150,200,250,300]
 
 FLUID_WATER = "Eau"
 FLUID_MILK = "Lait"
@@ -73,7 +63,7 @@ debit_circulateur = None
 diam_serpentin = 0.5 # Grand serpentin! Mettre la bonne valeur
 
 diam_jonction = 0.0095
-long_jonction = 3.5 #juste après la pompe et jusque avant la sortie, 8 sinon
+long_jonction = 2 #juste après la pompe et jusque avant la sortie, 8 sinon
 obstacles = None
 
 temp_nettoyage = 60
@@ -125,17 +115,32 @@ elif pasto == "2023":
     longueur_maintien = 12
 
 elif pasto == "upgrade2022":
-    fluid = FLUID_WATER
+    debitsLH = [70,
+                144,
+                178,
+                210,
+                250,
+                282,
+                312 ]
     debit = 0.250/ 3600  # m³/s (300 L/h)
-    temp_froid_in = 3         # °C (lait entrant)
+    temp_froid_in = 20        # °C (lait entrant)
     temp_chaud_in = 85        # °C (lait sortant du pasteurisateur)
+    temp_froid_in = 21        # °C (lait entrant)
+    temp_chaud_in = 73.3        # °C (lait sortant du pasteurisateur)
+    temp_chauffe = 89
+    temp_chauffe = 75.3
+
+    fluid = FLUID_WATER
+    temp_froid_in = 21        # °C (lait entrant)
+    temp_chaud_in = 23        # °C (lait sortant du pasteurisateur)
+    temp_chauffe = 25
 
     # Dimensions initiales (à optimiser)
-    diam_int_tube = 0.0095    # m (diamètre intérieur tube central)
-    diam_ext_tube = 0.0105    # m (diamètre extérieur tube central)
+    diam_int_tube = 0.008#0.0095    # m (diamètre intérieur tube central)
+    diam_ext_tube = 0.010#0.0105    # m (diamètre extérieur tube central)
     diam_calandre = 0.014    # m (diamètre intérieur du tube extérieur)
 
-    diam_serpentin = 0.35  # Diamètre de courbure du serpentin (m)
+    diam_serpentin = 0.28  # Diamètre de courbure du serpentin (m)
 
     longueur = 18 # 2 x 9 mètres
 
@@ -143,17 +148,14 @@ elif pasto == "upgrade2022":
 
     diam_chauffe = 0.009
     longueur_chauffe = 15
-    temp_chauffe = 89
-    diam_chauffe = ((0.0113*6) + (0.0095*9))/15   #0.0117
-    diam_chauffe_ext = ((0.0127*6) + (0.0105*9))/15 #0.0125
+    diam_chauffe = (((0.0113**2 * 6) + (0.0095**2 *9))/15)**0.5   #0.0117
+    diam_chauffe_ext = (((0.0127**2 * 6) + (0.0105**2 * 9))/15)**0.5 #0.0125
     longueur_chauffe = 15 #20
 
     diam_maintien = 0.0095
     longueur_maintien = 9
 
 elif pasto == "12bonniers":
-    #Changer pour une plus vieille machine avec deux échangeurs Klarstein
-    #et changer le serpentin de chauffe par deux récupérations.
     debit = 0.250 / 3600  # m³/s (300 L/h)
     temp_froid_in = 4         # °C (lait entrant)
     temp_chaud_in = 85        # °C (lait sortant du pasteurisateur)
@@ -165,18 +167,16 @@ elif pasto == "12bonniers":
 
     diam_serpentin = 0.28  # Diamètre de courbure du serpentin (m)
 
-    longueur = 18 # hypothese de départ
+    longueur = 20 # hypothese de départ
 
     appoint = 4300 # W en supposant 500W de pertes (2880W = 14A + 1920W = 8A)4800W d'électricité à 20A)
 
     diam_chauffe = ((0.0113*6) + (0.0095*9))/15
     diam_chauffe_ext = ((0.0127*6) + (0.0105*9))/15
     longueur_chauffe = 15 #9+ (0.2 * np.pi * 17.5)
+    temp_chauffe = 89
 
     diam_maintien = 0.0095
-
-    debit_nettoyage = 0.320 / 3600
-    v_nettoyage = None
 
 elif pasto == "ideal":
     #Deux Coolosus 2 pour l'échangeur (récupérateur)
@@ -231,6 +231,19 @@ elif pasto == "nefis-cata":
     longueur_maintien = 10
 
 elif pasto == "nefis":
+    debitsLH = [37,
+                74,
+                121,
+                153,
+                189,
+                222,
+                250,
+                268,
+                294,
+                328,
+                360
+                ]
+
     #Échangeur à plaques
     #Tube dans tube "Klarstein" avec circulation forcée
     fluid = FLUID_CREAM
@@ -238,6 +251,11 @@ elif pasto == "nefis":
     debit = 0.250 / 3600  # m³/s (300 L/h)
     temp_froid_in = 55         # °C (lait entrant)
     temp_chaud_in = 89        # °C (lait sortant du pasteurisateur)
+
+    fluid = FLUID_WATER
+    temp_froid_in = 21        # °C (lait entrant)
+    temp_chaud_in = 23        # °C (lait sortant du pasteurisateur)
+    temp_chauffe = 25
 
     # Paramètres géométriques
     plaques_serie = 1
@@ -265,15 +283,21 @@ elif pasto == "nefis":
     longueur_chauffe = 15 #9.4
     temp_chauffe = 93
     #TEST
-    diam_chauffe = 0.0117 #((0.0113*6) + (0.0095*9))/15   #0.0117
-    diam_chauffe_ext = 0.0125 #((0.0127*6) + (0.0105*9))/15 #0.0125
+    diam_chauffe = 0.009
+    longueur_chauffe = 15
+    diam_chauffe = (((0.0113**2 * 6) + (0.0095**2 *9))/15)**0.5   #0.0117
+    diam_chauffe_ext = (((0.0127**2 * 6) + (0.0105**2 * 9))/15)**0.5 #0.0125
     longueur_chauffe = 15 #20
+    appoint = 43 # W en supposant 500W de pertes (2880W = 14A + 1920W = 8A)4800W d'électricité à 20A)
+
+    diam_maintien = 0.0095
+    longueur_maintien = 9
+
     diam_calandre_chauffe = None
     debit_circulateur = None
 
-    diam_jonction = 0.013
-    diam_maintien = 0.013 #0.0095 #0.013
-    #longueur_maintien = 9
+    #diam_jonction = 0.013
+    #diam_maintien = 0.013 #0.0095 #0.013
 
 elif pasto == "nefis-eau":
 
@@ -452,7 +476,9 @@ def nombre_dean(Re: float, d_h: float, D_curve: float) -> float:
     # Validé par les interprétations de Dean, W.R. (1927). "Note on the motion of fluid in a curved pipe". Philosophical Magazine, 4(20), 208-223.*
     # mais sa lecture est difficile:
     # https://www.cambridge.org/core/journals/mathematika/article/note-on-the-motion-of-fluid-in-a-curved-pipe/C53740B97524473762A91F32F38E8781
-    return Re * math.sqrt(d_h / D_curve)
+    dean = Re * ((d_h / D_curve)**0.5)
+    print (f"Re={Re:.1f}, rac d/D={(d_h/D_curve)**0.5:.5f}, Dean={dean:.1f}")
+    return dean
 
 def correction_serpentin_nu(Nu_straight: float, De: float, section_type: str) -> float:
     """Applique la correction de Nusselt pour les serpentins"""
@@ -468,21 +494,21 @@ def correction_serpentin_nu(Nu_straight: float, De: float, section_type: str) ->
     # Limite De à 200 pour éviter des corrections irréalistes
     De_clamped = De#min(De, 200)
 
-    if section_type == 'tube':
+    if section_type == 'tube' or section_type == 'maintain':
         # Corrélation de Schmidt modifiée
         return Nu_straight * (1 + 0.8 * (1 - np.exp(-0.05 * De_clamped)))
     else:
         # Corrélation pour annulaire avec saturation
         return Nu_straight * (1 + 0.6 * (1 - np.exp(-0.03 * De_clamped)))
 
-def correction_serpentin_f(f_straight: float, De: float) -> float:
-    """Applique la correction du facteur de friction"""
-    # return f_straight * (0.37 * De**0.36)
-    """Correction réaliste pour le facteur de friction"""
-    De_clamped = De# min(De, 200)
-    # Référence de DeepSeek:
-    # Ito, H. (1959). "Friction Factors for Turbulent Flow in Curved Pipes". Journal of Basic Engineering, 81(2), 123-134.
-    return f_straight * (1 + 0.3 * (1 - np.exp(-0.02 * De_clamped)))
+# def correction_serpentin_f(f_straight: float, De: float) -> float:
+#     """Applique la correction du facteur de friction"""
+#     # return f_straight * (0.37 * De**0.36)
+#     """Correction réaliste pour le facteur de friction"""
+#     De_clamped = De# min(De, 200)
+#     # Référence de DeepSeek:
+#     # Ito, H. (1959). "Friction Factors for Turbulent Flow in Curved Pipes". Journal of Basic Engineering, 81(2), 123-134.
+#     return f_straight * (1 + 0.3 * (1 - np.exp(-0.02 * De_clamped)))
 
 # =============================================
 # FONCTIONS DE CALCUL
@@ -495,17 +521,17 @@ def resistance_paroi(diam_int_tube: float, diam_ext_tube: float) -> float:
     # Résistance thermique = épaisseur / conductivité
     return epaisseur / k_inox #  * np.log(diam_ext_tube/diam_int_tube)
 
-def calcul_pertes_charge_serpentin(L: float, d_h: float, f: float, rho: float, v: float) -> float:
-    """Calcule les pertes de charge avec correction serpentin"""
-    # Pertes de charge régulières
-    dp_linear = f * (L / d_h) * (rho * v**2 / 2)
-
-    # Pertes supplémentaires dues aux coudes (1 coude par mètre)
-    n_coude = L  # Approximation
-    k_coude = 0.5 * (d_h / diam_serpentin)**0.5  # Coefficient de perte localisée
-    dp_coude = n_coude * k_coude * (rho * v**2 / 2)
-
-    return dp_linear + dp_coude
+# def calcul_pertes_charge_serpentin(L: float, d_h: float, f: float, rho: float, v: float) -> float:
+#     """Calcule les pertes de charge avec correction serpentin"""
+#     # Pertes de charge régulières
+#     dp_linear = f * (L / d_h) * (rho * v**2 / 2)
+#
+#     # Pertes supplémentaires dues aux coudes (1 coude par mètre)
+#     n_coude = L  # Approximation
+#     k_coude = 0.5 * (d_h / diam_serpentin)**0.5  # Coefficient de perte localisée
+#     dp_coude = n_coude * k_coude * (rho * v**2 / 2)
+#
+#     return dp_linear + dp_coude
 
 def coefficient_convection_serpentin(fluid: str, parallele: int,
                                      diam_int_tube: float ,diam_ext_tube: float, diam_calandre: float, longueur: float,
@@ -515,7 +541,7 @@ def coefficient_convection_serpentin(fluid: str, parallele: int,
 
     """Coefficient de convection avec correction serpentin"""
     # Calcul section Area
-    if section_type == 'tube':
+    if section_type == 'tube' or section_type == "maintain":
         A = np.pi * (diam_int_tube/2)**2
         d_h = diam_int_tube
     else:
@@ -543,18 +569,21 @@ def coefficient_convection_serpentin(fluid: str, parallele: int,
     # ΔP = f * (L / D) * (ρ * v² / 2) + ΣK * (ρ * v² / 2)  # Pertes singulières
 
     Nu2=0
+    diam_ratio = d_h/diam_serpentin
     De = nombre_dean(Re, d_h, diam_serpentin)
-    print ("Dean=",De)
-    Nu_laminaire = 3.66 * (1+ (0.049*(De**0.75)))
-    Nu_turbulent = 0.023*(Re**0.8)*(props['pr']**0.4)*(1+(0.1*(De**0.5)))
+    Nu_laminaire0 = 3.66 * (1+ (0.049*(De**0.75)))
+    Nu_turbulent0 = 0.023*(Re**0.8)*(props['pr']**0.4)*(1+(0.1*(min(De,500)**0.5)))
+
+    Nu_laminaire = 0.7 * (Re**0.43)*(props['pr']**(1/6)) * (diam_ratio**0.07)
+    Nu_turbulent = 0.00619 * (Re**0.92) * (props['pr']**0.4) * (1 + 3.46*diam_ratio)
     if Re > 2000:
         f = (0.79 * np.log(Re) - 1.64)**-2
-        Nu = (f/8) * (Re - 1000) * props['pr'] / (1 + 12.7 * math.sqrt(f/8) * (props['pr']**(2/3) - 1))
-        Nu2 = 0.023 * Re**0.8 * props['pr']**0.4
+        Nu = (f/8) * (Re - 1000) * props['pr'] / (1 + 12.7 * ((f/8)**0.5) * (props['pr']**(2/3) - 1))
+        #Nu2 = 0.023 * Re**0.8 * props['pr']**0.4
     else:
-        Nu2 = 3.66 + (0.0668 * (diam_int_tube/longueur) * Re * props['pr']) \
-              / (1 + 0.04 * ((diam_int_tube/longueur) * Re * props['pr'])**(2/3))
-        if section_type == 'tube':
+        #Nu2 = 3.66 + (0.0668 * (diam_int_tube/longueur) * Re * props['pr']) \
+        #      / (1 + 0.04 * ((diam_int_tube/longueur) * Re * props['pr'])**(2/3))
+        if section_type == 'tube' or section_type == "maintain":
             Nu = 3.66 + 0.19 * (Re * props['pr'] * d_h/longueur)**0.8
         else:
             Nu = 4.86 + 0.27 * (Re * props['pr'] * d_h/longueur)**0.5
@@ -562,37 +591,53 @@ def coefficient_convection_serpentin(fluid: str, parallele: int,
     # Correction pour serpentin
     #print (f"\n{section_type}: Reynold={Re:.1f}, Dean for dh={d_h*1000:.1f}mm : {De:.1f}")
     Nu_curved = correction_serpentin_nu(Nu, De, section_type)
-    Nu_Radwan = 0.036*(De**0.85)*(props['pr']**0.4)*(1+(0.2*De**0.5))
-    #print (f"Nu={Nu:.3f}, Nu2={Nu2:.3f}, Nu curved={Nu_curved:.3f}, Radwan Nu={Nu_Radwan:.3f}, Laminaire={Nu_laminaire:.1f}, Turbulent={Nu_turbulent:.1f}")
-    #if section_type == 'tube':
-    #     print(f"Direct Nu={0.021*(De**0.8)*(props['pr']**0.4):.3f}")
+    Nu_Radwan = 0.036*(min(De,500)**0.85)*(props['pr']**0.4)*(1+(0.2*min(De,500)**0.5))
+    print (f"Nu={Nu:.3f}, Nu2={Nu2:.3f}, Nu curved={Nu_curved:.3f}, Radwan Nu={Nu_Radwan:.3f}, Laminaire={Nu_laminaire:.1f}, Turbulent={Nu_turbulent:.1f}")
+    print (f"NuT={Nu_turbulent0:.3f}, NuL={Nu_laminaire0:.3f}, Radwan Nu={Nu_Radwan:.3f}, Laminaire={Nu_laminaire:.1f}, Turbulent={Nu_turbulent:.1f}")    # if section_type == 'tube':
+    #      print(f"Direct Nu={0.021*(De**0.8)*(props['pr']**0.4):.3f}")
     # else:
-    #     print(f"Direct Nu={0.0245*(De**0.77)*(props['pr']**0.4):.3f}")
+    #      print(f"Direct Nu={0.0245*(De**0.77)*(props['pr']**0.4):.3f}")
     # print(f"Empirical Nu={0.023*(Re**0.8)*(1.0+(0.1*(De**0.5)))*(props['pr']**0.4):.3f}")
 
-    f_curved = correction_serpentin_f(f, De)
-    if section_type == 'tube':
-        f_turbulent = 0.3164*(Re**-0.25) * min(1 + (0.01 * De), 3.0 )  #0.01 au lieu de 0.033    +(0.03*(De**-0.3))
+    # f_curved = correction_serpentin_f(f, De)
+    if section_type == 'tube' or section_type == "maintain":
+        # gamma = d_h / diam_serpentin
+        # f_turbulent = 0.3164 * (Re ** -0.25) + 0.012 * gamma**0.5
+
+        # # Apply roughness correction if applicable (Das's correlation Eq. 31)
+        if section_type == 'tube':
+             roughness = 4.5e-5  # m (typical for stainless steel)
+        else: #elif material == 'LDPE':
+             roughness = 1e-6    # m (smooth plastic)
+        # if roughness > 0:
+        #     F_roughness = 4*17.5782 * (Re ** -0.3137) * (gamma ** 0.3621) * ((roughness / d_h) ** 0.6885)
+        #     f_turbulent += F_roughness
+
+        kA = -2 * math.log10(roughness/d_h / 3.7 + 12/Re)
+        kB = -2 * math.log10(roughness/d_h / 3.7 + 2.51*kA/Re)
+        kC = -2 * math.log10(roughness/d_h / 3.7 + 2.51*kB/Re)
+        f_turbulent = (kA - (kB - kA)**2 / (kC - 2*kB + kA))**(-2)
+        #f_turbulent = (0.3164 / (Re**0.25)) * min(1 + (0.01 * De), 3.0 )  #0.01 au lieu de 0.033    +(0.03*(De**-0.3))
     else:
         #f_turbulent = 0.079*(Re**-0.25)*(1+(0.1*(De**0.5)))
         k = diam_ext_tube / diam_calandre
-        denom_corr = (1 - k**2 - k**4 / 2)
-        f_turbulent = (0.0791 / (Re**0.25)) * ((1 - k**2) / denom_corr) * (1+(0.033*(min(De,500)**0.5)))
+        denom_corr = (1 - (k**2) - ((k**4) / 2))
+        f_turbulent = (0.0791 * (Re**-0.25)) * ((1 - k**2) / denom_corr) * (1+(0.033*(min(De,500)**0.5)))
         # stainless_coef = 0.015
         # A = (2.457 * np.log(1/((7/Re)**0.9 + 0.27*stainless_coef)))**16
         # B = (37530/Re)**16
         # f_turbulent = 8 * ((8/Re)**12 + 1/(A+B)**1.5)**(1/12)
-    f_laminaire = (64/Re)*(1+(0.1*De**0.5))
+    f_laminaire = (64/Re) * (1+(0.1*min(De,500)**0.5))
 
-    if Re > 5000 and De > 500:
+    if Re > 5000: # and De > 500:
         Nu_final = Nu_Radwan
         f_interpol = f_turbulent
     elif Re >= 2000:
-        Nu_final = (Nu_laminaire**3+Nu_turbulent**3)**(1/3)
-        X= (Re-2000)/3000
+        Nu_final = (Nu_laminaire**3+Nu_Radwan**3)**(1/3)
+        X = (Re-2000)/3000
         f_interpol = (f_laminaire*(1.0-X)) + (f_turbulent*X)
     else:
-        Nu_final = Nu_curved
+        Nu_final = Nu_laminaire
         f_interpol = f_laminaire
     #print (f"Nu retenu: {Nu_final:.1f}")
     #print(f"Calculs de \"f\", Actuel={f:.6f}, Curved={f_curved:.6f}, Turbulent={f_turbulent:.6f}, Laminaire={f_laminaire:.6f}, Retenu={f_interpol:.6f}")
@@ -637,11 +682,11 @@ def coefficient_convection_plaque(fluid: str, section_canal: float, longueur: fl
     #else: # Low Re, short channel: https://research.library.mun.ca/15388/1/thesis.pdf
     if Re < 2300:
         f = (12 / Re)\
-            * math.sqrt(((2/(math.cos((math.radians(angle_chevron)))**1.73))**2)
-                        +((1.33/math.sqrt(longueur/d_h))*(Re**(0.0551*(angle_chevron**0.675))))**2)
+            * (((2/(math.cos((math.radians(angle_chevron)))**1.73))**2)
+               +((1.33/((longueur/d_h)**0.5))*(Re**(0.0551*(angle_chevron**0.675))))**2)**0.5
         print(f"f low Re={f}")
     # Pertes de charge totales
-    delta_P_canal = 2 * f * (longueur/d_h) * (props['rho'] * v**2 / 2)
+    delta_P_canal = 4 * f * (longueur/d_h) * (props['rho'] * v**2 / 2)
     print(f"canal={delta_P_canal}Pa")
     #delta_P_entree_sortie = 1.4 * (props['rho'] * v**2 / 2)
 
@@ -764,7 +809,9 @@ if a_plaque is None:
     print(f"Configuration: Tube dans tube (inox)")
     print(f"- Épaisseur paroi: {epaisseur_plaque*mmInM:.2f} mm")
     print(f"- Diamètre tube: {diam_int_tube*mmInM:.1f} mm int / {diam_ext_tube*mmInM:.1f} mm ext")
+    print(f"  Longueur: {longueur*1000:.1f}mm, Volume: {longueur*diam_int_tube*diam_int_tube*math.pi*1000/4:.1f} L")
     print(f"- Diamètre calandre: {diam_calandre*mmInM:.1f} mm")
+    print(f"  Longueur: {longueur*1000:.1f}mm, Volume: {longueur*(diam_calandre**2-diam_ext_tube**2)*math.pi*1000/4:.1f} L")
 else:
     print(f"Configuration: Echangeur à 2x{plaques_serie*parallele}+1 plaques (inox)")
     print(f"- Plaques: {plaques_serie} séries de {parallele} en parallèle")
@@ -892,13 +939,13 @@ for debit in debitsLH:
 
     h_maintien, f_maintien, rey_maintien, dean_maintien, v_maintien, delta_P_maintien, P2_maintien = \
         coefficient_convection_serpentin(fluid, 1, diam_maintien, None, None, longueur_maintien, diam_serpentin, \
-                                         debit, temp_chaud_in, "tube")
+                                         debit, temp_chaud_in, "maintain")
     if v_maintien < v_min:
         v_min = v_maintien
 
     h_jonction, f_jonction, rey_jonction, dean_jonction, v_jonction, delta_P_jonction, P2_jonction = \
         coefficient_convection_serpentin(fluid, 1, diam_jonction, None, None, long_jonction, 1.0, \
-                                         debit, temp_chaud_out, "tube")
+                                         debit, temp_chaud_out, "maintain")
     if v_jonction < v_min:
         v_min = v_jonction
 
@@ -912,36 +959,40 @@ for debit in debitsLH:
 
     print("\n"+"="*50)
     print(f"Débit {int(debit*3600*1000+0.5)}L/H:")
+
     print("\nTempératures:")
     print(f"- Calandre, entrée: {temp_froid_in:.1f}°C, sortie {temp_froid_out_target:.1f}°C, reçoit {q_transfert/1000.0:.3f} kW")
     print(f"- Tube, entrée: {temp_chaud_in:.1f}°C, sortie {temp_chaud_out:.1f}°C, donne {q_transfert/1000.0:.3f} kW")
     print(f"- Appoint: {appoint/1000.0:.3f} kW pour amener {debit * 3600:.3f} m³/h de {temp_froid_out_target:.1f}°C à {temp_chaud_in:.1f} °C")
     print(f"- Jonctions: {long_jonction:.3f} m, diamètre {diam_jonction * mmInM:.3f} mm")
+
     print("\nConditions opératoires:")
     print(f"- Débit tube: {debit/parallele*3600:.3f} m³/h * {parallele:.1f} paralleles ({fluid} à {temp_tube:.1f}°C)")
-    print(f"  Vitesse et Reynold tube: {v_tube:.3f} m/sec -> {rey_tube:.1f}")
+    print(f"  Vitesse et Reynold tube: {v_tube:.3f} m/sec, R={rey_tube:.1f}")
     if a_plaque is None:
         print(f"- Débit calandre: {debit/parallele*3600:.3f} m³/h * {parallele:.1f} paralleles ({fluid} à {temp_calandre:.1f}°C)")
-        print(f"  Vitesse et Reynold calandre: {v_annulaire:.3f} m/sec -> {rey_annulaire:.1f}")
+        print(f"  Vitesse et Reynold calandre: {v_annulaire:.3f} m/sec, R={rey_annulaire:.1f}")
         # Vitesse maximale dans les coudes
         v_max = v_annulaire * (1 + 0.75 * ( (diam_calandre - diam_ext_tube) / diam_serpentin)**0.5)
         print(f"  Vitesse maximale dans les courbes: {v_max:.3f} m/sec")
     print(f"- Longueur échangeur actuelle: {longueur:.3f} m")
     print(f"  Longueur échangeur calculée selon transfert possible: {longueur2:.3f} m")
     print(f"- Chauffe: {longueur_chauffe:.3f} m, diamètre {diam_chauffe * mmInM:.3f} mm")
-    print(f"  Vitesse et Reynold Chauffe: {v_chauffe:.3f} m/sec -> {rey_chauffe:.1f}")
+    print(f"  Vitesse et Reynold Chauffe: {v_chauffe:.3f} m/sec, R={rey_chauffe:.1f}")
     print(f"- Maintien: {longueur_maintien:.3f} m, diamètre {diam_maintien * mmInM:.3f} mm")
-    print(f"  Vitesse et Reynold Maintien: {v_maintien:.3f} m/sec -> {rey_maintien:.1f}")
+    print(f"  Vitesse et Reynold Maintien: {v_maintien:.3f} m/sec, Durée {longueur_maintien/v_maintien:.1f} sec, R={rey_maintien:.1f}")
     print(f"- Jonctions: {long_jonction:.3f} m, diamètre {diam_jonction * mmInM:.3f} mm")
-    print(f"  Vitesse et Reynold Jonctions: {v_jonction:.3f} m/sec -> {rey_jonction:.1f}")
+    print(f"  Vitesse et Reynold Jonctions: {v_jonction:.3f} m/sec, R={rey_jonction:.1f}")
+
     print("\nÉchangeur:")
     print(f"- LMTD: {lmtd:.1f} °C")
-    print(f"- Puissance à échanger: {q_transfert/1000.0:.3f} kW, Efficacité requise: {100*q_transfert/(q_transfert+appoint):.1f}%")
+    print(f"- Puissance à échanger: {q_transfert/1000.0:.3f} kW, Efficacité requise selon appoint: {100*q_transfert/(q_transfert+appoint):.1f}%")
     U_necessaire = q_transfert/ lmtd / surface_actuelle
-    print(f"- Puissance nécessaire par m²K: {U_necessaire:.1f} W/m²K")
+    NTU = (q_transfert / lmtd)/(1000*debit*props['cp'])
+    print(f"- Puissance nécessaire par m²K: {U_necessaire:.1f} W/m²K, NTU={NTU:.1f} --> Efficacité: {100*NTU/(1+NTU):.1f}%")
     print(f"  Puissance possible à échanger par m²K: {U_possible:.1f} W/m²K, {U_possible/U_necessaire*100.0:.1f}% du nécessaire")
-    print(f"- Surface actuelle: {surface_actuelle:.1f} m")
-    print(f"  Surface calculée selon transfert possible: {surface_echange:.1f} m")
+    print(f"- Surface actuelle: {surface_actuelle:.1f} m²")
+    print(f"  Surface calculée selon transfert possible: {surface_echange:.1f} m²")
 
     print("\nChauffe d'appoint:")
     if diam_calandre_chauffe is None:
@@ -959,7 +1010,7 @@ for debit in debitsLH:
     temperatures = [temp_calandre,temp_chauffe_moy,
                     temp_chaud_in,temp_tube,    temp_calandre]
     if a_plaque:
-        diam_plaque = math.sqrt((largeur_plaque*espacement*parallele) / np.pi)*2
+        diam_plaque = ((largeur_plaque*espacement*parallele) / np.pi)**0.5 * 2
     diametres =    [diam_calandre if a_plaque is None else diam_plaque,
                     diam_chauffe,    diam_maintien,
                     diam_int_tube if a_plaque is None else diam_plaque,   diam_jonction]
@@ -1037,11 +1088,11 @@ h_chauffe, f_chauffe, rey_chauffe, dean_chauffe, v_chauffe, delta_P_chauffe, P2_
 print(f"- Chauffe: {doc_P(delta_P_chauffe, P2_chauffe)}")
 h_maintien, f_maintien, rey_maintien, dean_maintien, v_maintien, delta_P_maintien, P2_maintien = \
     coefficient_convection_serpentin(cleaning_fluid, 1, diam_maintien, None, None, longueur_maintien, diam_serpentin, \
-                                     debit_nettoyage, temp_nettoyage, "tube")
+                                     debit_nettoyage, temp_nettoyage, "maintain")
 print(f"- Maintien: {doc_P(delta_P_maintien,P2_maintien)}")
 h_jonction, f_jonction, rey_jonction, dean_jonction, v_jonction, delta_P_jonction, P2_jonction = \
     coefficient_convection_serpentin(fluid, 1, diam_jonction, None, None, long_jonction, 1.0, \
-                                     debit, temp_chaud_out, "tube")
+                                     debit, temp_chaud_out, "maintain")
 print(f"- Jonction: {doc_P(delta_P_jonction,P2_jonction)}")
 print(f"- TOTAL nettoyage, long= {longueur*2+longueur_chauffe+longueur_maintien+long_jonction:.3f}m:",
       f" {doc_P(delta_P_annulaire+delta_P_tube+delta_P_chauffe+delta_P_maintien+delta_P_jonction,None)}")
