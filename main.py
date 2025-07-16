@@ -233,15 +233,14 @@ elif pasto == "nefis-cata":
 elif pasto == "nefis":
     debitsLH = [37,
                 74,
-                121,
-                153,
+                125,
+                161,
                 189,
-                222,
-                250,
+                216,
                 268,
-                294,
-                328,
-                360
+                313,
+                342,
+                370
                 ]
 
     #Échangeur à plaques
@@ -252,10 +251,10 @@ elif pasto == "nefis":
     temp_froid_in = 55         # °C (lait entrant)
     temp_chaud_in = 89        # °C (lait sortant du pasteurisateur)
 
-    fluid = FLUID_WATER
-    temp_froid_in = 21        # °C (lait entrant)
-    temp_chaud_in = 23        # °C (lait sortant du pasteurisateur)
-    temp_chauffe = 25
+    # fluid = FLUID_WATER
+    # temp_froid_in = 21        # °C (lait entrant)
+    # temp_chaud_in = 23        # °C (lait sortant du pasteurisateur)
+    # temp_chauffe = 25
 
     # Paramètres géométriques
     plaques_serie = 1
@@ -276,28 +275,20 @@ elif pasto == "nefis":
     appoint = 4380 # W en supposant 500W de pertes (2880W = 14A + 1920W = 8A)4800W d'électricité à 20A)
 
     diam_serpentin = 0.28 # pour l'appoint
-    #diam_chauffe = 0.010 #0.0095 #0.0113
-    #diam_ext_chauffe = 0.0105 #0.0127    # m (diamètre extérieur tube central)
+    diam_chauffe = 0.0113 #0.0095 #0.0113
+    diam_ext_chauffe = 0.0127 #0.0127    # m (diamètre extérieur tube central)
     #diam_calandre_chauffe = 0.014 #0.020    # m (diamètre intérieur du tube extérieur)
     #debit_circulateur = debit * 3
-    longueur_chauffe = 15 #9.4
+    longueur_chauffe = 15.2
     temp_chauffe = 93
-    #TEST
-    diam_chauffe = 0.009
-    longueur_chauffe = 15
-    diam_chauffe = (((0.0113**2 * 6) + (0.0095**2 *9))/15)**0.5   #0.0117
-    diam_chauffe_ext = (((0.0127**2 * 6) + (0.0105**2 * 9))/15)**0.5 #0.0125
-    longueur_chauffe = 15 #20
-    appoint = 43 # W en supposant 500W de pertes (2880W = 14A + 1920W = 8A)4800W d'électricité à 20A)
 
-    diam_maintien = 0.0095
+    diam_maintien = 0.013
     longueur_maintien = 9
 
     diam_calandre_chauffe = None
     debit_circulateur = None
 
-    #diam_jonction = 0.013
-    #diam_maintien = 0.013 #0.0095 #0.013
+    diam_jonction = 0.013
 
 elif pasto == "nefis-eau":
 
@@ -616,7 +607,7 @@ def coefficient_convection_serpentin(fluid: str, parallele: int,
         kA = -2 * math.log10(roughness/d_h / 3.7 + 12/Re)
         kB = -2 * math.log10(roughness/d_h / 3.7 + 2.51*kA/Re)
         kC = -2 * math.log10(roughness/d_h / 3.7 + 2.51*kB/Re)
-        f_turbulent = (kA - (kB - kA)**2 / (kC - 2*kB + kA))**(-2)
+        f_turbulent = (kA - (kB - kA)**2 / (kC - 2*kB + kA))**(-2) * (1+(0.033*(min(De,500)**0.5)))
         #f_turbulent = (0.3164 / (Re**0.25)) * min(1 + (0.01 * De), 3.0 )  #0.01 au lieu de 0.033    +(0.03*(De**-0.3))
     else:
         #f_turbulent = 0.079*(Re**-0.25)*(1+(0.1*(De**0.5)))
@@ -627,7 +618,7 @@ def coefficient_convection_serpentin(fluid: str, parallele: int,
         # A = (2.457 * np.log(1/((7/Re)**0.9 + 0.27*stainless_coef)))**16
         # B = (37530/Re)**16
         # f_turbulent = 8 * ((8/Re)**12 + 1/(A+B)**1.5)**(1/12)
-    f_laminaire = (64/Re) * (1+(0.1*min(De,500)**0.5))
+    f_laminaire = (64/Re) * (1+(0.1*(min(De,500)**0.5)))
 
     if Re > 5000: # and De > 500:
         Nu_final = Nu_Radwan
@@ -675,27 +666,32 @@ def coefficient_convection_plaque(fluid: str, section_canal: float, longueur: fl
 
     h = Nu * props['k'] / d_h
 
-    #if Re >= 2000:
-    # Facteur friction (corrélation Martin)
-    f = (1.5 / Re**0.5) * (1 + 0.002*angle_chevron**1.5)
-    print(f"f={f}")
-    #else: # Low Re, short channel: https://research.library.mun.ca/15388/1/thesis.pdf
-    if Re < 2300:
-        f = (12 / Re)\
-            * (((2/(math.cos((math.radians(angle_chevron)))**1.73))**2)
-               +((1.33/((longueur/d_h)**0.5))*(Re**(0.0551*(angle_chevron**0.675))))**2)**0.5
-        print(f"f low Re={f}")
+    A = np.pi * (diam_jonction/2)**2  # Section étroite
+    vj = debit / A
+
+    C = 0.26
+    g = 0.25
+    f = C * (Re ** g)  # corrélation empirique (Eq. 3.38)
+    #delta_P_canal = (4 * f * longueur / d_h) * 0.5 * props['rho'] * v**2  # perte de charge (Eq. type Darcy/Fanning)
+
+    # # Facteur friction (corrélation Martin)
+    # f = (1.5 / Re**0.5) * (1 + 0.002*angle_chevron**1.5)
+    # print(f"f={f:.1f}")
+    # #else: # Low Re, short channel: https://research.library.mun.ca/15388/1/thesis.pdf
+    # if Re < 2300:
+    #     f = (12 / Re)\
+    #         * (((2/(math.cos((math.radians(angle_chevron)))**1.73))**2)
+    #            +((1.33/((longueur/d_h)**0.5))*(Re**(0.0551*(angle_chevron**0.675))))**2)**0.5
+    #     print(f"f low Re={f:.1f}")
     # Pertes de charge totales
-    delta_P_canal = 4 * f * (longueur/d_h) * (props['rho'] * v**2 / 2)
-    print(f"canal={delta_P_canal}Pa")
+    delta_P_canal = 100 * f * (longueur/d_h) * (props['rho'] * v**2)
+    print(f"canal={delta_P_canal:.1f}Pa")
     #delta_P_entree_sortie = 1.4 * (props['rho'] * v**2 / 2)
 
     beta = diam_jonction / (diam_jonction*parallele)
     K = 1.5 * (1 - beta**2)
-    A = np.pi * (diam_jonction/2)**2  # Section étroite
-    vj = debit / A
     delta_P_entree_sortie = K * (props['rho'] * vj**2) / 2
-    print(f"inlet/outlet={delta_P_entree_sortie}Pa")
+    print(f"inlet/outlet={delta_P_entree_sortie:.1f}Pa")
     delta_P = delta_P_canal + delta_P_entree_sortie
 
     return h, f, Re, v, delta_P
